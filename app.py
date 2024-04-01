@@ -15,25 +15,27 @@ label_mapping = {
     'T': '+',
 }
 
+def encode_message(text):
+    return ''.join(label_mapping.get(char.upper(), char) for char in text)
 
-def conv(label_mapping, x):
-    result = ''
-    for i in x:
-        result += label_mapping.get(i, i)
-
-    return result
-
+def decode_message(text):
+    reverse_mapping = {value: key for key, value in label_mapping.items()}
+    return ''.join(reverse_mapping.get(char, char) for char in text)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        input_text = request.form['input_text']
-        input_text = input_text.upper()
-        output_text = conv(label_mapping, input_text)
-        return render_template('index.html', output_text=output_text)
+        action = request.form.get('action')
+        message = request.form.get('message')
+        
+        if action == 'Encode':
+            encoded_message = encode_message(message)
+            return render_template('index.html', encoded_message=encoded_message)
+        elif action == 'Decode':
+            decoded_message = decode_message(message)
+            return render_template('index.html', decoded_message=decoded_message)
 
     return render_template('index.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
