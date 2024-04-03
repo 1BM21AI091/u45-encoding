@@ -3,81 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Message Sender</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            text-align: center;
-            margin: 40px;
-        }
-
-        h1 {
-            color: #333;
-            text-shadow: 2px 2px 2px rgba(0,0,0,0.2);
-        }
-
-        form {
-            margin-top: 20px;
-        }
-
-        label {
-            color: #555;
-            font-size: 18px;
-            margin-right: 10px;
-        }
-
-        #message {
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            width: 300px;
-            margin-right: 10px;
-        }
-
-        button {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        p {
-            color: #333;
-            font-size: 18px;
-            margin-top: 20px;
-            animation: fadeIn 1s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+    <title>Secret Message Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Secret Message Sender</h1>
-    <form method="post" action="/">
-        <label for="message">Enter the message:</label>
-        <input type="text" id="message" name="message" required>
-        <br>
-        <button type="submit" name="action" value="Encode">Encode</button>
-        <button type="submit" name="action" value="Decode">Decode</button>
-    </form>
-    {% if encoded_message %}
-        <p>Encoded Message: {{ encoded_message }}</p>
-    {% endif %}
-    {% if decoded_message %}
-        <p>Decoded Message: {{ decoded_message }}</p>
-    {% endif %}
+    <div class="container">
+        <h1>Secret Message Board</h1>
+        <form method="post" action="/">
+            <textarea name="message" placeholder="Enter your secret message" required></textarea>
+            <button type="submit">Upload</button>
+        </form>
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message">
+                <p>{{ message['user'] }}</p>
+                <p><a href="/decode/{{ message['message'] }}">Decode</a></p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>

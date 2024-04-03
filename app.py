@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
+# Store messages uploaded by users
+messages = []
+
+# Encoding mapping
 label_mapping = {
     'A': '4',
     'B': '13',
-    'C':'(',
-    'D':'1 )',
     'E': '3',
     'G': '6',
     'H': '#',
@@ -17,27 +19,30 @@ label_mapping = {
     'T': '+',
 }
 
+# Decoding mapping (reverse of encoding mapping)
+reverse_mapping = {value: key for key, value in label_mapping.items()}
+
+# Function to encode a message
 def encode_message(text):
     return ''.join(label_mapping.get(char.upper(), char) for char in text)
 
+# Function to decode a message
 def decode_message(text):
-    reverse_mapping = {value: key for key, value in label_mapping.items()}
     return ''.join(reverse_mapping.get(char, char) for char in text)
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def home():
     if request.method == 'POST':
-        action = request.form.get('action')
-        message = request.form.get('message')
-        
-        if action == 'Encode':
-            encoded_message = encode_message(message)
-            return render_template('index.html', encoded_message=encoded_message)
-        elif action == 'Decode':
-            decoded_message = decode_message(message)
-            return render_template('index.html', decoded_message=decoded_message)
+        message = request.form['message']
+        encoded_message = encode_message(message)
+        messages.append({'user': 'Guest', 'message': encoded_message})
+        return redirect(url_for('home'))
+    return render_template('index.html', messages=messages)
 
-    return render_template('index.html')
+@app.route('/decode/<message>', methods=['GET'])
+def decode(message):
+    decoded_message = decode_message(message)
+    return render_template('decoded.html', decoded_message=decoded_message)
 
 if __name__ == '__main__':
     app.run(debug=True)
